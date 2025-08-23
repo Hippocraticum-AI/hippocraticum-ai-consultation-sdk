@@ -4,7 +4,7 @@ from typing import Any, Optional, Union, cast
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import AuthenticatedClient
 from ...models.pydantic_consultation_public import PydanticConsultationPublic
 from ...types import Response
 
@@ -19,7 +19,7 @@ def _get_kwargs() -> dict[str, Any]:
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: AuthenticatedClient, response: httpx.Response
 ) -> Optional[Union[Any, list["PydanticConsultationPublic"]]]:
     if response.status_code == 200:
         response_200 = []
@@ -40,7 +40,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: AuthenticatedClient, response: httpx.Response
 ) -> Response[Union[Any, list["PydanticConsultationPublic"]]]:
     return Response(
         status_code=HTTPStatus(response.status_code),

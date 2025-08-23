@@ -4,7 +4,7 @@ from typing import Any, Optional, Union, cast
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import AuthenticatedClient
 from ...models.http_validation_error import HTTPValidationError
 from ...models.pydantic_get_consultation_questions_response import PydanticGetConsultationQuestionsResponse
 from ...types import UNSET, Response, Unset
@@ -36,7 +36,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: AuthenticatedClient, response: httpx.Response
 ) -> Optional[Union[Any, HTTPValidationError, PydanticGetConsultationQuestionsResponse]]:
     if response.status_code == 200:
         response_200 = PydanticGetConsultationQuestionsResponse.from_dict(response.json())
@@ -59,7 +59,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: AuthenticatedClient, response: httpx.Response
 ) -> Response[Union[Any, HTTPValidationError, PydanticGetConsultationQuestionsResponse]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
