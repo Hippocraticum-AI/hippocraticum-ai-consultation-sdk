@@ -48,9 +48,9 @@ class AuthenticatedClient:
     _client: Optional[httpx.Client] = field(default=None, init=False)
     _async_client: Optional[httpx.AsyncClient] = field(default=None, init=False)
 
-    token: str
-    prefix: str = "Bearer"
-    auth_header_name: str = "Authorization"
+    token: str | None = field(default=None, kw_only=True, alias="token")
+    prefix: str = ""
+    auth_header_name: str = "X-API-KEY"
 
     def with_headers(self, headers: dict[str, str]) -> "AuthenticatedClient":
         """Get a new client matching this one with additional headers"""
@@ -87,7 +87,8 @@ class AuthenticatedClient:
     def get_httpx_client(self) -> httpx.Client:
         """Get the underlying httpx.Client, constructing a new one if not previously set"""
         if self._client is None:
-            self._headers[self.auth_header_name] = f"{self.prefix} {self.token}" if self.prefix else self.token
+            if self.token:
+                self._headers[self.auth_header_name] = f"{self.prefix} {self.token}".strip() if self.prefix else self.token
             self._client = httpx.Client(
                 base_url=self._base_url,
                 cookies=self._cookies,
@@ -119,7 +120,8 @@ class AuthenticatedClient:
     def get_async_httpx_client(self) -> httpx.AsyncClient:
         """Get the underlying httpx.AsyncClient, constructing a new one if not previously set"""
         if self._async_client is None:
-            self._headers[self.auth_header_name] = f"{self.prefix} {self.token}" if self.prefix else self.token
+            if self.token:
+                self._headers[self.auth_header_name] = f"{self.prefix} {self.token}".strip() if self.prefix else self.token
             self._async_client = httpx.AsyncClient(
                 base_url=self._base_url,
                 cookies=self._cookies,
