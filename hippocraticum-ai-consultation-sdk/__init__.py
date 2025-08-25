@@ -1,9 +1,9 @@
 """A client library for accessing Hippocraticum AI Consultation API"""
 
-from .client import AuthenticatedClient
 from .client_public import ConsultationClient
+from .client_public_async import AsyncConsultationClient
 
 __all__ = (
-    "AuthenticatedClient",
     "ConsultationClient",
+    "AsyncConsultationClient",
 )

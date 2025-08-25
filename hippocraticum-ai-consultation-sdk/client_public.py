@@ -27,6 +27,9 @@ from .api.operations.stream_status_operation_operations_op_id_events_get import 
 
 from .api.post_process.post_processing_sessions_id_post_process_post import sync as _post_process_audio
 
+from .api.default.health_check_health_get import sync_detailed as _health_check
+from .api.default.root_get import sync_detailed as _root
+
 from .tools import safe_call
 
 from .models.pydantic_consultation_initialize_request import PydanticConsultationInitializeRequest
@@ -383,7 +386,7 @@ class _PostProcess:
 
 class ConsultationClient:
     """
-    Публичный фасад, похожий на openai.OpenAI()
+    Public facade, similar to openai.OpenAI()
     """
     def __init__(self, base_url: str, api_key: Optional[str] = None, timeout: float = 30.0):
         self._c = AuthenticatedClient(
@@ -396,7 +399,58 @@ class ConsultationClient:
         self.reports = _Reports(self._c)
         self.operations = _Operations(self._c)
         self.post_process = _PostProcess(self._c)
+        self.default = _Default(self._c)
 
-# Async-вариант (по аналогии), если генератор выдал async-функции:
+
+class _Default:
+    """Default endpoints including health check and root endpoint"""
+    
+    def __init__(self, client: AuthenticatedClient):
+        self._c = client
+
+    @safe_call
+    def health_check(self):
+        """Health Check
+        
+        Health check endpoint with database and MinIO status.
+        Useful for monitoring service availability and dependencies.
+        
+        Returns:
+            Health status response indicating service status
+        """
+        return _health_check(client=self._c)
+    
+    @safe_call
+    def root(self):
+        """Root endpoint
+        
+        Root endpoint returning basic API information.
+        Can be used for basic connectivity testing.
+        
+        Returns:
+            Root response with API information
+        """
+        return _root(client=self._c)
+        
+    # Convenience aliases
+    @safe_call
+    def health(self):
+        """Health Check (alias for health_check)
+        
+        Returns:
+            Health status response
+        """
+        return self.health_check()
+        
+    @safe_call
+    def ping(self):
+        """Ping service (alias for root)
+        
+        Returns:
+            Root response for connectivity testing
+        """
+        return self.root()
+
+# Async variant (by analogy), if generator produced async functions:
 # class AsyncConsultationClient: ...
 
